@@ -1,9 +1,9 @@
 import java.util.Scanner;
 
 /**
- * ForzaQuattroTest
+ *
  */
-public class ForzaQuattroTest {
+public class ForzaQuattroPrototype {
 
     static String gridToString(int[][] grid, String p1Icon, String p2Icon) {
         String out = "";
