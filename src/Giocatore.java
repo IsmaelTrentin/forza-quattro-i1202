@@ -4,16 +4,16 @@ public class Giocatore {
 
     String icon;
 
-    public Giocatore(String name, String icon) {
+    Giocatore(String name, String icon) {
         this.name = name;
-        this.icon = icon != null ? "" + icon.charAt(0) : "X";
+        this.icon = icon == null ? "?" : icon;
     }
 
-    public String getIcon() {
+    String getIcon() {
         return this.icon;
     }
 
-    public String getName() {
+    String getName() {
         return this.name;
     }
 }
