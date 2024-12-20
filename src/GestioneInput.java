@@ -4,7 +4,7 @@ import java.util.Scanner;
  * Handles requesting input using a Scanner object.
  *
  * @author Ismael Trentin
- * @version 2024.12.14
+ * @version 2024.12.18
  * @see Scanner
  */
 public class GestioneInput {
@@ -30,6 +30,13 @@ public class GestioneInput {
      */
     void rilascia() {
         input.close();
+    }
+
+    /**
+     * Clears the Scanner buffer.
+     */
+    void clearBuffer() {
+        input.nextLine();
     }
 
     /**
@@ -89,15 +96,98 @@ public class GestioneInput {
         int n;
 
         System.out.print(prompt);
-        while (!input.hasNextInt() || (n = input.nextInt()) <= 0) {
+        while (!input.hasNextInt() || (n = input.nextInt()) < 0) {
             System.out.print(Ansi.CURSOR_UP);
             Ansi.clearLine();
-            System.out.print("(invalid) " + prompt);
+            System.out.printf("(invalid, must be positive) %s", prompt);
             input.nextLine();
         }
 
         // clear scanner buffer
         input.nextLine();
+
         return n;
+    }
+
+    /**
+     * Asks for an integer that is in the range [min, max]. If an out of bounds
+     * input is provided, an error message is printed and input is requested once
+     * again.
+     * This function blocks until a <b>valid</b> input is received.
+     *
+     * @param prompt what message to print before asking for input
+     * @param min    the valid range minimum, included
+     * @param max    the valid range maximum, included
+     * @return the int inputted by the user
+     */
+    int askRangedInt(String prompt, int min, int max) {
+        int n;
+
+        System.out.print(prompt);
+        while (!input.hasNextInt() || (n = input.nextInt()) > max || n < min) {
+            System.out.print(Ansi.CURSOR_UP);
+            Ansi.clearLine();
+            System.out.printf("(invalid, must be between %s and %s) %s", min, max, prompt);
+            input.nextLine();
+        }
+
+        // clear scanner buffer
+        input.nextLine();
+
+        return n;
+    }
+
+    /**
+     * Asks for an odd integer that is in the range [1, 15]. If an out of bounds
+     * input or even number is provided, an error message is printed and input is
+     * requested once again.
+     * This function blocks until a <b>valid</b> input is received.
+     *
+     * @param prompt what message to print before asking for input
+     * @return the int inputted by the user.
+     */
+    int askNumberOfMatches(String prompt) {
+        int n;
+
+        System.out.print(prompt);
+        while (!input.hasNextInt() || (n = input.nextInt()) > 15 || n < 1 || n % 2 == 0) {
+            System.out.print(Ansi.CURSOR_UP);
+            Ansi.clearLine();
+            System.out.printf("(invalid, must be odd and between %s and %s) %s", 1, 15, prompt);
+            input.nextLine();
+        }
+
+        return n;
+    }
+
+    /**
+     * Prints a dedicated menu to select between the provided icons.
+     *
+     * @param prompt what message to print before printing the menu
+     * @icons icons the available icons
+     * @return the selected icon
+     */
+    String askPlayerIcon(String prompt, String[] icons) {
+        int iconIdx = -1;
+
+        // ansiClearScreen();
+        System.out.println(prompt);
+        for (int i = 0; i < icons.length; i++) {
+            System.out.println((i + 1) + ") " + icons[i]);
+        }
+
+        boolean isBadOpt = false;
+        do {
+
+            if (isBadOpt) {
+                System.out.print(Ansi.CURSOR_UP);
+                Ansi.clearLine();
+                System.out.print("(bad option) ");
+            }
+
+            isBadOpt = iconIdx <= 0 || iconIdx > icons.length;
+        } while ((iconIdx = askInt("select 1-" + icons.length + ": ")) <= 0 || iconIdx > icons.length);
+
+        return icons[iconIdx - 1];
     }
 }
