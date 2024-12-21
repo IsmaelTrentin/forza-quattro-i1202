@@ -7,6 +7,8 @@ public class Ansi {
 
     public static final String CLEAR = "\u001B[2J";
     public static final String CLEAR_LINE = "\u001B[2K";
+    public static final String CLEAR_LINE_FROM_CURSOR = "\u001B[0K";
+    public static final String CLEAR_LINE_UP_TO_CURSOR = "\u001B[1K";
     public static final String TOP_LEFT = "\u001B[H";
     public static final String CURSOR_UP = "\u001B[1A";
     public static final String RESET = "\u001B[0m";
