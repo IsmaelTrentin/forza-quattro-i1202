@@ -190,4 +190,29 @@ public class GestioneInput {
 
         return icons[iconIdx - 1];
     }
+
+    void setUnixRawMode() {
+        // check man for actual use:
+        // save_state=$(stty -g)
+        // stty raw
+        // ...
+        // stty "$save_state"
+
+        try {
+            Runtime.getRuntime().exec(new String[] { "sh", "-c", "stty raw -echo </dev/tty" }).waitFor();
+        } catch (Exception e) {
+            System.err.println("error: failed to set raw mode for unix terminal");
+            e.printStackTrace();
+        }
+    }
+
+    void restoreUnixTerminal() {
+        try {
+            Runtime.getRuntime().exec(new String[] { "sh", "-c", "stty -raw echo </dev/tty" }).waitFor();
+            // System.out.println("\nTerminal restored to normal mode.");
+        } catch (Exception e) {
+            System.err.println("error: failed to restore unix terminal");
+            e.printStackTrace();
+        }
+    }
 }
