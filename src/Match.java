@@ -98,20 +98,79 @@ public class Match {
 
         while (!this.hasEnded()) {
             Ansi.clearScreen();
-            String prompt = String.format(
-                    "[turno %d] %s (%s) scegli colonna (1-%d): ",
-                    this.turn + 1,
-                    this.currentPlayer.getName(),
-                    this.currentPlayer.getIcon(),
-                    this.grid.getWidth());
 
-            System.out.println(this.gridToString());
-            int col = input.askRangedInt(prompt, 1, this.grid.getWidth()) - 1;
-            int row = this.getFirstAvailableRow(col);
+            int col;
+            int row;
 
-            while (row == -1) {
-                col = input.askRangedInt("riga piena. cambia riga: ", 1, this.grid.getWidth()) - 1;
+            if (input.isRawModeSupported()) {
+                col = 0;
+                row = 0;
+
+                boolean reading = true;
+                input.setUnixRawMode();
+
+                while (reading) {
+                    Ansi.clearScreen();
+                    String prompt = String.format(
+                            "[turno %d] %s (%s) scegli colonna muovendoti con A e D:\r\n",
+                            this.turn + 1,
+                            this.currentPlayer.getName(),
+                            this.currentPlayer.getIcon(),
+                            this.grid.getWidth());
+                    System.out.print(prompt);
+                    System.out.println(this.gridToString(col));
+
+                    int keyCode;
+                    try {
+                        keyCode = System.in.read();
+                    } catch (Exception e) {
+                        System.err.println("IO error: failed to read stdin");
+                        continue;
+                    }
+
+                    if (keyCode == 'w') {
+                        input.restoreUnixTerminal();
+                        System.exit(0);
+                    } else if (keyCode == 'a') {
+                        col = ((col - 1) % this.grid.getWidth() + this.grid.getWidth()) % this.grid.getWidth();
+                    } else if (keyCode == 'd') {
+                        col = (col + 1) % this.grid.getWidth();
+                    } else if (keyCode == ' ') {
+                        row = this.getFirstAvailableRow(col);
+
+                        if (row == -1) {
+                            reading = true;
+                            System.out.println("riga piena!");
+                            try {
+
+                                Thread.sleep(300);
+                            } catch (Exception e) {
+                                System.out.println("error: failed to interrupt");
+                            }
+                            continue;
+                        }
+
+                        reading = false;
+                    }
+                }
+
+                input.restoreUnixTerminal();
+            } else {
+                String prompt = String.format(
+                        "[turno %d] %s (%s) scegli colonna (1-%d): ",
+                        this.turn + 1,
+                        this.currentPlayer.getName(),
+                        this.currentPlayer.getIcon(),
+                        this.grid.getWidth());
+
+                System.out.println(this.gridToString());
+                col = input.askRangedInt(prompt, 1, this.grid.getWidth()) - 1;
                 row = this.getFirstAvailableRow(col);
+
+                while (row == -1) {
+                    col = input.askRangedInt("riga piena. cambia riga: ", 1, this.grid.getWidth()) - 1;
+                    row = this.getFirstAvailableRow(col);
+                }
             }
 
             this.grid.setCell(col, row, this.currentPlayer);
@@ -126,4 +185,9 @@ public class Match {
     String gridToString() {
         return this.grid.toStr();
     }
+
+    String gridToString(int column) {
+        return this.grid.toStr(column, this.currentPlayer);
+    }
+
 }
