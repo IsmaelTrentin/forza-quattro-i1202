@@ -40,16 +40,59 @@ public class Grid {
     }
 
     String toStr() {
+        return this.toStr(-1, null);
+    }
+
+    String toStr(int column, Giocatore currentPlayer) {
+        int rows = this.grid.length;
+        int cols = this.grid[0].length;
+        int row;
+        int col;
         String out = "";
 
-        for (int i = 0; i < this.grid.length; i++) {
-            for (int j = 0; j < this.grid[i].length; j++) {
-                Giocatore cell = this.grid[i][j];
-
-                out += cell != null ? cell.getIcon() : "-";
+        // top border
+        out += column == 0 ? Ansi.cyan("\u250C") : "\u250C";
+        for (col = 0; col < cols; col++) {
+            out += col == column ? Ansi.cyan("\u2500\u2500\u2500") : "\u2500\u2500\u2500";
+            if (col < cols - 1) {
+                out += col == column || col == column - 1 ? Ansi.cyan("\u252C") : "\u252C";
             }
-            out += "\n";
         }
+        out += column == cols - 1 ? Ansi.cyan("\u2510\r\n") : "\u2510\r\n";
+
+        // rows and cols
+        for (row = 0; row < rows; row++) {
+            out += column == 0 ? Ansi.cyan("\u2502") : "\u2502";
+            for (col = 0; col < cols; col++) {
+                // cell content
+                out += " x".replace("x",
+                        this.grid[row][col] == null ? "  " : this.grid[row][col].getIcon());
+                out += col == column || col == column - 1 ? Ansi.cyan("\u2502") : "\u2502";
+            }
+            out += "\r\n";
+
+            // separator
+            if (row < rows - 1) {
+                out += column == 0 ? Ansi.cyan("\u251C") : "\u251C";
+                for (col = 0; col < cols; col++) {
+                    out += col == column ? Ansi.cyan("\u2500\u2500\u2500") : "\u2500\u2500\u2500";
+                    if (col < cols - 1) {
+                        out += col == column || col == column - 1 ? Ansi.cyan("\u253C") : "\u253C";
+                    }
+                }
+                out += column == cols - 1 ? Ansi.cyan("\u2524\r\n") : "\u2524\r\n";
+            }
+        }
+
+        // bottom border
+        out += column == 0 ? Ansi.cyan("\u2514") : "\u2514";
+        for (col = 0; col < cols; col++) {
+            out += col == column ? Ansi.cyan("\u2500\u2500\u2500") : "\u2500\u2500\u2500";
+            if (col < cols - 1) {
+                out += col == column || col == column - 1 ? Ansi.cyan("\u2534") : "\u2534";
+            }
+        }
+        out += column == cols - 1 ? Ansi.cyan("\u2518\r\n") : "\u2518\r\n";
 
         return out;
     }
