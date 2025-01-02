@@ -97,6 +97,7 @@ public class Partita {
                 continue;
             }
 
+            Ansi.clearScreen();
             System.out.println(match.gridToString());
             System.out.printf("match %d vinto da %s!\n", i + 1, winner.getName());
         }
@@ -104,6 +105,7 @@ public class Partita {
         Giocatore matchWinner = this.getWinner();
 
         System.out.println();
-        System.out.printf(" ⭐️ Il vincitore della partita: %s %s! ⭐️\n", matchWinner.getIcon(), matchWinner.getName());
+        System.out.printf(" ⭐️ Il vincitore della partita e': %s %s! ⭐️\n", matchWinner.getIcon(),
+                matchWinner.getName());
     }
 }
