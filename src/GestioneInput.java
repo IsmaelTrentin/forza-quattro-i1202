@@ -191,7 +191,17 @@ public class GestioneInput {
         return icons[iconIdx - 1];
     }
 
+    boolean isRawModeSupported() {
+        String osName = System.getProperty("os.name").toLowerCase();
+
+        return osName.contains("mac") || osName.contains("nix") || osName.contains("nux");
+    }
+
     void setUnixRawMode() {
+        if (!this.isRawModeSupported()) {
+            System.err.println("error: raw mode is not supported on this os");
+            return;
+        }
         // check man for actual use:
         // save_state=$(stty -g)
         // stty raw
@@ -207,6 +217,11 @@ public class GestioneInput {
     }
 
     void restoreUnixTerminal() {
+        if (!this.isRawModeSupported()) {
+            System.err.println("error: raw mode is not supported on this os. could not reset.");
+            return;
+        }
+
         try {
             Runtime.getRuntime().exec(new String[] { "sh", "-c", "stty -raw echo </dev/tty" }).waitFor();
             // System.out.println("\nTerminal restored to normal mode.");
