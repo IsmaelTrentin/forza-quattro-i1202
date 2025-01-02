@@ -22,6 +22,7 @@ public class Ansi {
     public static final String WHITE = "\u001B[37m";
     public static final String DEFAULT_FG = "\u001B[39m";
     public static final String DEFAULT_BG = "\u001B[49m";
+    public static final String BOLD = "\033[1m";
 
     static String fg(String text, int r, int g, int b) {
         r = Math.min(r, 255);
@@ -74,6 +75,10 @@ public class Ansi {
 
     static String white(String text) {
         return WHITE + text + RESET;
+    }
+
+    static String bold(String text) {
+        return BOLD + text + RESET;
     }
 
     static void cursorTo(int row, int col) {
