@@ -9,8 +9,6 @@ public class ForzaQuattro {
         GestioneInput input = new GestioneInput();
         Partita gm = new Partita();
 
-        Ansi.clearScreen();
-
         gm.start(input);
 
         input.rilascia();
