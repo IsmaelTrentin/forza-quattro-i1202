@@ -4,7 +4,7 @@ import java.util.Scanner;
  * Handles requesting input using a Scanner object.
  *
  * @author Ismael Trentin
- * @version 2024.12.18
+ * @version 2025.01.03
  * @see Scanner
  */
 public class GestioneInput {

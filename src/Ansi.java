@@ -2,6 +2,7 @@
  * Functions to interact with the terminal using ANSI escape codes.
  *
  * @author Ismael Trentin
+ * @version 2025.01.03
  */
 public class Ansi {
 

@@ -4,7 +4,7 @@
  *
  * @author Ivan Paljevic
  * @author Ismael Trentin
- * @version 2024.12.20
+ * @version 2025.01.03
  */
 public class Match {
 
