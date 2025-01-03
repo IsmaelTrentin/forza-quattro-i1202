@@ -57,7 +57,7 @@ public class Match {
         Giocatore winner = null;
 
         for (int i = this.grid.getHeight() - 1; i > 2; i--) {
-            for (int j = 0; j < this.grid.getHeight() - 3; j++) {
+            for (int j = 0; j < this.grid.getWidth() - 3; j++) {
                 winner = this.grid.getCellAt(j, i);
 
                 if (winner == null) {
@@ -96,14 +96,12 @@ public class Match {
 
         this.currentPlayer = this.pickRandomPlayer();
 
+        int col = 0;
+        int row;
         while (!this.hasEnded()) {
             Ansi.clearScreen();
 
-            int col;
-            int row;
-
             if (input.isRawModeSupported()) {
-                col = 0;
                 row = 0;
 
                 boolean reading = true;
@@ -111,6 +109,7 @@ public class Match {
 
                 while (reading) {
                     Ansi.clearScreen();
+
                     String prompt = String.format(
                             "[turno %d] %s (%s) scegli colonna muovendoti con A e D:\r\n",
                             this.turn + 1,
@@ -128,12 +127,12 @@ public class Match {
                         continue;
                     }
 
-                    if (keyCode == 'w') {
+                    if (keyCode == 'q') {
                         input.restoreUnixTerminal();
                         System.exit(0);
-                    } else if (keyCode == 'a') {
+                    } else if (keyCode == 68 || keyCode == 'a') {
                         col = ((col - 1) % this.grid.getWidth() + this.grid.getWidth()) % this.grid.getWidth();
-                    } else if (keyCode == 'd') {
+                    } else if (keyCode == 67 || keyCode == 'd') {
                         col = (col + 1) % this.grid.getWidth();
                     } else if (keyCode == ' ') {
                         row = this.getFirstAvailableRow(col);
@@ -142,7 +141,6 @@ public class Match {
                             reading = true;
                             System.out.println("riga piena!");
                             try {
-
                                 Thread.sleep(300);
                             } catch (Exception e) {
                                 System.out.println("error: failed to interrupt");
