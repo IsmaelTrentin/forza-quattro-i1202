@@ -191,6 +191,23 @@ public class GestioneInput {
         return icons[iconIdx - 1];
     }
 
+    int read() {
+        if (!this.isRawModeSupported()) {
+            System.err.println("error: raw mode is not supported on this os");
+            return -1;
+        }
+
+        try {
+            this.setUnixRawMode();
+            int b = System.in.read();
+            this.restoreUnixTerminal();
+            return b;
+        } catch (Exception e) {
+            System.err.println("IO error: failed to read stdin");
+            return -1;
+        }
+    }
+
     boolean isRawModeSupported() {
         String osName = System.getProperty("os.name").toLowerCase();
 
