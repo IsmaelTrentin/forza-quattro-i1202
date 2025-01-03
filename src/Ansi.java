@@ -103,12 +103,20 @@ public class Ansi {
     }
 
     static String centerLine(String line, int width) {
+        if (width == 0) {
+            return line;
+        }
+
         int xPadding = (width - lengthIgnoreAnsi(line)) / 2;
 
-        return String.format("%" + xPadding + "s%s%" + xPadding + "s\n", "", line, "");
+        return String.format("%" + xPadding + "s%s%" + xPadding + "s", "", line, "");
     }
 
     static String centerText(String text, int width, int height) {
+        if (width == 0 || height == 0) {
+            return text;
+        }
+
         String out = "";
         String[] lines = text.split("\n");
 
@@ -120,7 +128,7 @@ public class Ansi {
                 }
                 continue;
             }
-            out += "\n";
+            out += "\r\n";
         }
 
         return out;
