@@ -98,11 +98,11 @@ public class Partita {
                 Ansi.clearScreen();
 
                 System.out.println("pareggio!");
-                System.out.println(match.gridToString());
+                System.out.println(match.grid.toStr());
                 System.out.print("premi un qualsiasi tasto per rigiocare o q per uscire ");
                 int key = input.read(); // blocking
                 if (key == 'q') {
-                    Ansi.clearScreen();
+                    // Ansi.clearScreen();
                     System.out.println("partita terminata");
                     return;
                 }
@@ -121,7 +121,7 @@ public class Partita {
 
             Ansi.clearScreen();
             System.out.printf("match %d vinto da %s!\n", i + 1, matchWinner.getName());
-            System.out.println(match.gridToString());
+            System.out.println(match.grid.toStr());
             if (i + 1 != matches.length) {
                 System.out.println("premi un qualsiasi tasto per continuare ");
                 input.read();
