@@ -60,16 +60,16 @@ public class Partita {
         Ansi.clearScreen();
 
         // player 1
-        String name = input.askString("nome giocatore1: ");
+        String name = input.askString("nome " + Ansi.cyan("giocatore1") + ": ");
         Ansi.clearScreen();
-        String icon = input.askPlayerIcon("icona " + name + ": ", icons);
+        String icon = input.askPlayerIcon("icona " + Ansi.cyan(name) + ": ", icons);
         Ansi.clearScreen();
         this.player1 = new Giocatore(name, icon);
 
         this.filterPickedIcon(icon);
 
         // player 2
-        name = input.askString("nome giocatore2: ");
+        name = input.askString("nome " + Ansi.green("giocatore2") + ": ");
         while (name.equals(this.player1.getName())) {
             System.out.print(Ansi.CURSOR_UP);
             Ansi.clearLine();
