@@ -2,7 +2,7 @@
  * Functions to interact with the terminal using ANSI escape codes.
  *
  * @author Ismael Trentin
- * @version 2025.01.03
+ * @version 2025.01.05
  */
 public class Ansi {
 
@@ -11,6 +11,7 @@ public class Ansi {
     public static final String CLEAR_LINE_FROM_CURSOR = "\u001B[0K";
     public static final String CLEAR_LINE_UP_TO_CURSOR = "\u001B[1K";
     public static final String TOP_LEFT = "\u001B[H";
+    public static final String BOTTOM_LEFT = "\033[500;1H";
     public static final String CURSOR_UP = "\u001B[1A";
     public static final String RESET = "\u001B[0m";
     public static final String BLACK = "\u001B[30m";
@@ -24,6 +25,7 @@ public class Ansi {
     public static final String DEFAULT_FG = "\u001B[39m";
     public static final String DEFAULT_BG = "\u001B[49m";
     public static final String BOLD = "\033[1m";
+    public static final String ITALIC = "\033[3m";
 
     static String fg(String text, int r, int g, int b) {
         r = Math.min(r, 255);
@@ -82,6 +84,10 @@ public class Ansi {
         return BOLD + text + RESET;
     }
 
+    static String italic(String text) {
+        return ITALIC + text + RESET;
+    }
+
     static void cursorTo(int row, int col) {
         System.out.printf("\u001B[%d;%dH", row, col);
     }
@@ -108,7 +114,7 @@ public class Ansi {
             return line;
         }
 
-        int xPadding = (width - lengthIgnoreAnsi(line)) / 2;
+        int xPadding = Math.max(1, (width - lengthIgnoreAnsi(line)) / 2);
 
         return String.format("%" + xPadding + "s%s%" + xPadding + "s", "", line, "");
     }
