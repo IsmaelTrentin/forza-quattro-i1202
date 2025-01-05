@@ -1,10 +1,9 @@
-
 /**
  * Match
  *
  * @author Ivan Paljevic
  * @author Ismael Trentin
- * @version 2025.01.03
+ * @version 2025.01.06
  */
 public class Match {
 
@@ -13,8 +12,6 @@ public class Match {
     Giocatore player2;
 
     Giocatore currentPlayer;
-
-    Giocatore winner;
 
     Grid grid;
 
@@ -26,15 +23,73 @@ public class Match {
         this.grid = new Grid();
 
         this.currentPlayer = null;
-        this.winner = null;
     }
 
     boolean hasEnded() {
-        return this.grid.isFull() || this.winner != null;
+        System.out.println(this.getWinner());
+        return this.getWinner() != null || this.grid.isFull();
     }
 
     Giocatore getWinner() {
-        return this.winner;
+        Giocatore winner = null;
+
+        // horiz
+        for (int y = 0; y < this.grid.getHeight(); y++) {
+            for (int x = 0; x < this.grid.getWidth() - 3; x++) {
+                winner = this.grid.getCellAt(x, y);
+
+                if (winner != null
+                        && winner == this.grid.getCellAt(x + 1, y)
+                        && winner == this.grid.getCellAt(x + 2, y)
+                        && winner == this.grid.getCellAt(x + 3, y)) {
+                    return winner;
+                }
+            }
+        }
+
+        // vertical
+        for (int y = this.grid.getHeight() - 1; y >= 3; y--) {
+            for (int x = 0; x < this.grid.getWidth(); x++) {
+                winner = this.grid.getCellAt(x, y);
+
+                if (winner != null
+                        && winner == this.grid.getCellAt(x, y - 1)
+                        && winner == this.grid.getCellAt(x, y - 2)
+                        && winner == this.grid.getCellAt(x, y - 3)) {
+                    return winner;
+                }
+            }
+        }
+
+        // diag. top left to bot right
+        for (int y = 0; y < this.grid.getHeight() - 3; y++) {
+            for (int x = 0; x < this.grid.getWidth() - 3; x++) {
+                winner = this.grid.getCellAt(x, y);
+
+                if (winner != null
+                        && winner == this.grid.getCellAt(x + 1, y + 1)
+                        && winner == this.grid.getCellAt(x + 2, y + 2)
+                        && winner == this.grid.getCellAt(x + 3, y + 3)) {
+                    return winner;
+                }
+            }
+        }
+
+        // diag. top right to bot left
+        for (int y = 0; y < this.grid.getHeight() - 3; y++) {
+            for (int x = this.grid.getWidth() - 1; x >= 3; x--) {
+                winner = this.grid.getCellAt(x, y);
+
+                if (winner != null
+                        && winner == this.grid.getCellAt(x - 1, y + 1)
+                        && winner == this.grid.getCellAt(x - 2, y + 2)
+                        && winner == this.grid.getCellAt(x - 3, y + 3)) {
+                    return winner;
+                }
+            }
+        }
+
+        return null;
     }
 
     Giocatore pickRandomPlayer() {
@@ -52,44 +107,6 @@ public class Match {
 
         return grid.getHeight() - 1;
     };
-
-    Giocatore calculateWinner() {
-        Giocatore winner = null;
-
-        for (int i = this.grid.getHeight() - 1; i > 2; i--) {
-            for (int j = 0; j < this.grid.getWidth() - 3; j++) {
-                winner = this.grid.getCellAt(j, i);
-
-                if (winner == null) {
-                    continue;
-                }
-
-                if (winner == this.grid.getCellAt(j, i - 1)
-                        && winner == this.grid.getCellAt(j, i - 2)
-                        && winner == this.grid.getCellAt(j, i - 3)) {
-                    return winner;
-                }
-                if (winner == this.grid.getCellAt(j + 1, i)
-                        && winner == this.grid.getCellAt(j + 2, i)
-                        && winner == this.grid.getCellAt(j + 3, i)) {
-                    return winner;
-                }
-                if (winner == this.grid.getCellAt(j + 1, i - 1)
-                        && winner == this.grid.getCellAt(j + 2, i - 2)
-                        && winner == this.grid.getCellAt(j + 3, i - 3)) {
-                    return winner;
-                }
-                if (j >= 3 && winner == this.grid.getCellAt(j - 1, i - 1)
-                        && winner == this.grid.getCellAt(j - 2, i - 2)
-                        && winner == this.grid.getCellAt(j - 3, i - 3)) {
-                    return winner;
-                }
-            }
-
-        }
-
-        return null;
-    }
 
     void start(GestioneInput input) {
         this.grid.resetGrid();
@@ -111,13 +128,13 @@ public class Match {
                     Ansi.clearScreen();
 
                     String prompt = String.format(
-                            "[turno %d] %s (%s) scegli colonna muovendoti con A e D:\r\n",
+                            "[turno %d] %s (%s) scegli colonna muovendoti con A e D o <- e ->:\r\n",
                             this.turn + 1,
                             this.currentPlayer.getName(),
                             this.currentPlayer.getIcon(),
                             this.grid.getWidth());
                     System.out.print(prompt);
-                    System.out.println(this.gridToString(col));
+                    System.out.println(this.grid.toStr(col, this.currentPlayer));
 
                     int keyCode;
                     try {
@@ -161,7 +178,7 @@ public class Match {
                         this.currentPlayer.getIcon(),
                         this.grid.getWidth());
 
-                System.out.println(this.gridToString());
+                System.out.println(this.grid.toStr());
                 col = input.askRangedInt(prompt, 1, this.grid.getWidth()) - 1;
                 row = this.getFirstAvailableRow(col);
 
@@ -175,17 +192,7 @@ public class Match {
 
             this.currentPlayer = this.currentPlayer == this.player1 ? this.player2 : this.player1;
 
-            this.winner = this.calculateWinner();
             this.turn++;
         }
     }
-
-    String gridToString() {
-        return this.grid.toStr();
-    }
-
-    String gridToString(int column) {
-        return this.grid.toStr(column, this.currentPlayer);
-    }
-
 }
