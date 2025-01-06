@@ -153,23 +153,13 @@ public class Match {
     }
 
     /**
-     * Returns the first available row index for the column at index
-     * <code>col</code>.
+     * Handles input in raw mode and returns the column index in which to insert the
+     * player's token.
+     * This function blocks code execution.
      * 
-     * @param col the column to look in
-     * @return the first available row index for the column at index
-     *         <code>col</code>
+     * @param lastUsedCol the last used column index. Used for choice persistance
+     * @return the column index in which to insert the player's token
      */
-    int getFirstAvailableRow(int col) {
-        for (int i = 0; i < this.grid.getHeight(); i++) {
-            if (this.grid.getCellAt(col, i) != null) {
-                return i - 1;
-            }
-        }
-
-        return grid.getHeight() - 1;
-    };
-
     int pickColRawMode(int lastUsedCol) {
         int col = lastUsedCol;
 
@@ -185,7 +175,7 @@ public class Match {
                     this.currentPlayer.getIcon(),
                     this.grid.getWidth());
             System.out.print(prompt);
-            System.out.println(this.grid.toStr(col, this.currentPlayer));
+            System.out.println(this.grid.toStr(col));
 
             int keyCode;
             try {
@@ -204,7 +194,7 @@ public class Match {
             } else if (keyCode == 67 || keyCode == 'd') {
                 col = (col + 1) % this.grid.getWidth();
             } else if (keyCode == ' ') {
-                if (this.getFirstAvailableRow(col) == -1) {
+                if (this.grid.getFirstAvailableRow(col) == -1) {
                     reading = true;
 
                     System.out.println("riga piena!");
@@ -226,6 +216,12 @@ public class Match {
         return -1;
     }
 
+    /**
+     * Asks for the column number in which to place the player's token.
+     * This function blocks code execution until input is received.
+     * 
+     * @return the column index in which to place the player's token
+     */
     int pickColNormalMode() {
         String prompt = String.format(
                 "[turno %d] %s (%s) scegli colonna (1-%d): ",
@@ -237,7 +233,7 @@ public class Match {
         System.out.println(this.grid.toStr());
         int col = this.input.askRangedInt(prompt, 1, this.grid.getWidth()) - 1;
 
-        while (this.getFirstAvailableRow(col) == -1) {
+        while (this.grid.getFirstAvailableRow(col) == -1) {
             Ansi.clearLine();
             col = this.input.askRangedInt("riga piena. cambia riga: ", 1, this.grid.getWidth()) - 1;
         }
@@ -266,7 +262,7 @@ public class Match {
             Ansi.clearScreen();
 
             col = input.isRawModeSupported() ? this.pickColRawMode(col) : this.pickColNormalMode();
-            row = this.getFirstAvailableRow(col);
+            row = this.grid.getFirstAvailableRow(col);
 
             this.grid.setCell(col, row, this.currentPlayer);
             this.currentPlayer = this.currentPlayer == this.player1 ? this.player2 : this.player1;
