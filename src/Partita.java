@@ -3,26 +3,74 @@
  *
  * @author Ivan Paljevic
  * @author Ismael Trentin
- * @version 2025.01.03
+ * @version 2025.01.06
  */
 public class Partita {
 
+    /**
+     * Input handler.
+     */
+    GestioneInput input;
+
+    /**
+     * The matches (rounds) in a game of 'Forza Quattro'.
+     */
     Match[] matches;
 
-    String[] icons = { "🔴", "🟡", "💎", "🍕" };
-
+    /**
+     * Player 1.
+     */
     Giocatore player1;
+
+    /**
+     * Player 2.
+     */
     Giocatore player2;
 
+    /**
+     * Holds the total match wins for each player.
+     * Index 0 is player1 and index 1 is player2.
+     * 
+     * @see Partita#player1
+     * @see Partita#player2
+     */
     int[] playerWins = new int[2];
 
-    public Partita() {
+    /**
+     * Available icons that players can choose from.
+     */
+    String[] icons = { "🔴", "🟡", "💎", "🍕" };
+
+    /**
+     * Creates a new instance of Partita.
+     * 
+     * @param input the input handler
+     */
+    Partita(GestioneInput input) {
+        this.input = input;
         this.matches = new Match[0];
 
         this.player1 = null;
         this.player2 = null;
     }
 
+    /**
+     * Creates a new instance of Partita with custom icons.
+     * 
+     * @param input the input handler
+     * @param icons available icons that players can choose from
+     */
+    Partita(GestioneInput input, String[] icons) {
+        this(input);
+        this.icons = icons;
+    }
+
+    /**
+     * Removes the icon <code>pickedIcon</code> from <code>this.icons</code>.
+     * 
+     * @param pickedIcon the icon that needs to be filtered
+     * @see Partita#icons
+     */
     void filterPickedIcon(String pickedIcon) {
         String[] newIcons = new String[this.icons.length - 1];
 
@@ -39,51 +87,75 @@ public class Partita {
         this.icons = newIcons;
     }
 
+    /**
+     * Returns the game winner.
+     * 
+     * @return the game winner.
+     */
     Giocatore getWinner() {
-        // int p1Wins = 0;
-        // int p2Wins = 0;
-        //
-        // for (Match match : this.matches) {
-        // Giocatore winner = match.getWinner();
-        // if (winner == this.player1) {
-        // p1Wins++;
-        // } else if (winner == this.player2) {
-        // p2Wins++;
-        // }
-        // }
-        //
-        // return p1Wins > p2Wins ? this.player1 : this.player2;
         return this.playerWins[0] > this.playerWins[1] ? this.player1 : this.player2;
     }
 
-    void start(GestioneInput input) {
-        Ansi.clearScreen();
-
+    /**
+     * Initializes the players by asking for their names and icons.
+     */
+    void initPlayers() {
         // player 1
-        String name = input.askString("nome " + Ansi.cyan("giocatore1") + ": ");
+        String name = this.input.askString("nome " + Ansi.cyan("giocatore1") + ": ");
         Ansi.clearScreen();
-        String icon = input.askPlayerIcon("icona " + Ansi.cyan(name) + ": ", icons);
+        String icon = this.input.askPlayerIcon("icona " + Ansi.cyan(name) + ": ", icons);
         Ansi.clearScreen();
         this.player1 = new Giocatore(name, icon);
 
         this.filterPickedIcon(icon);
 
         // player 2
-        name = input.askString("nome " + Ansi.green("giocatore2") + ": ");
+        name = this.input.askString("nome " + Ansi.green("giocatore2") + ": ");
         while (name.equals(this.player1.getName())) {
             System.out.print(Ansi.CURSOR_UP);
             Ansi.clearLine();
-            name = input.askString("questo nome e' gia' in uso, riprova. nome giocatore2: ");
+            name = this.input.askString("questo nome e' gia' in uso, riprova. nome giocatore2: ");
         }
         Ansi.clearScreen();
-        icon = input.askPlayerIcon("icona " + name + ": ", icons);
-        Ansi.clearScreen();
+        icon = this.input.askPlayerIcon("icona " + name + ": ", icons);
         this.player2 = new Giocatore(name, icon);
+    }
 
-        // number of matches
-        int nMatches = input.askNumberOfMatches("numero di match: ");
+    /**
+     * Initializes the matches array by asking how many matches need to be played.
+     */
+    void initMatches() {
+        int nMatches = this.input.askNumberOfMatches("numero di match: ");
+        this.matches = new Match[nMatches];
+    }
+
+    /**
+     * Prints out the total wins for each player.
+     */
+    void printWins() {
+        System.out.printf("Vittorie %s: %d\r\n", this.player1.getName(), this.playerWins[0]);
+        System.out.printf("Vittorie %s: %d\r\n", this.player2.getName(), this.playerWins[1]);
+    }
+
+    /**
+     * Prints out the winner message.
+     */
+    void printWinner() {
+        Giocatore gameWinner = this.getWinner();
+        System.out.printf(" ⭐️ Il vincitore della partita e': %s! ⭐️\n", gameWinner.getName());
+    }
+
+    /**
+     * Starts the game by asking for the players' name and icon and the number of
+     * matches. It then plays each match and determines the winner.
+     */
+    void start() {
         Ansi.clearScreen();
-        matches = new Match[nMatches];
+
+        this.initPlayers();
+        Ansi.clearScreen();
+        this.initMatches();
+        Ansi.clearScreen();
 
         for (int i = 0; i < matches.length; i++) {
             Ansi.clearScreen();
@@ -128,11 +200,7 @@ public class Partita {
             }
         }
 
-        Giocatore gameWinner = this.getWinner();
-
-        System.out.println();
-        System.out.printf("Vittorie %s: %d\r\n", this.player1.getName(), this.playerWins[0]);
-        System.out.printf("Vittorie %s: %d\r\n", this.player2.getName(), this.playerWins[1]);
-        System.out.printf(" ⭐️ Il vincitore della partita e': %s! ⭐️\n", gameWinner.getName());
+        this.printWins();
+        this.printWinner();
     }
 }
