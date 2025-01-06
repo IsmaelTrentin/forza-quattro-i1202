@@ -1,4 +1,5 @@
 /**
+ * Start menu for the game 'Forza Quattro'.
  * 
  * @author Ivan Paljevic
  * @version 2025.01.06
