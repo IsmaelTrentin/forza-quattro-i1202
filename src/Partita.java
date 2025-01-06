@@ -160,10 +160,10 @@ public class Partita {
         for (int i = 0; i < matches.length; i++) {
             Ansi.clearScreen();
 
-            Match match = new Match(this.player1, this.player2);
+            Match match = new Match(this.input, this.player1, this.player2);
             this.matches[i] = match;
 
-            match.start(input); // blocking
+            match.start(); // blocking
             Giocatore matchWinner = match.getWinner();
 
             if (match.hasEnded() && matchWinner == null) {

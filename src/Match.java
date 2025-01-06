@@ -8,6 +8,11 @@
 public class Match {
 
     /**
+     * Input handler.
+     */
+    GestioneInput input;
+
+    /**
      * Player 1.
      */
     Giocatore player1;
@@ -35,10 +40,12 @@ public class Match {
     /**
      * Creates a new instance of Match given two players.
      * 
+     * @param input   the input handler
      * @param player1 player 1
      * @param player2 player 2
      */
-    public Match(Giocatore player1, Giocatore player2) {
+    public Match(GestioneInput input, Giocatore player1, Giocatore player2) {
+        this.input = input;
         this.player1 = player1;
         this.player2 = player2;
         this.grid = new Grid();
@@ -163,11 +170,11 @@ public class Match {
         return grid.getHeight() - 1;
     };
 
-    int pickColRawMode(GestioneInput input) {
-        int col = 0;
+    int pickColRawMode(int lastUsedCol) {
+        int col = lastUsedCol;
 
         boolean reading = true;
-        input.setUnixRawMode();
+        this.input.setUnixRawMode();
         while (reading) {
             Ansi.clearScreen();
 
@@ -190,7 +197,7 @@ public class Match {
             }
 
             if (keyCode == 'q') {
-                input.restoreUnixTerminal();
+                this.input.restoreUnixTerminal();
                 System.exit(0);
             } else if (keyCode == 68 || keyCode == 'a') {
                 col = ((col - 1) % this.grid.getWidth() + this.grid.getWidth()) % this.grid.getWidth();
@@ -209,17 +216,17 @@ public class Match {
                     continue;
                 }
 
-                input.restoreUnixTerminal();
+                this.input.restoreUnixTerminal();
                 reading = false;
                 return col;
             }
         }
 
-        input.restoreUnixTerminal();
+        this.input.restoreUnixTerminal();
         return -1;
     }
 
-    int pickColNormalMode(GestioneInput input) {
+    int pickColNormalMode() {
         String prompt = String.format(
                 "[turno %d] %s (%s) scegli colonna (1-%d): ",
                 this.turn + 1,
@@ -228,11 +235,11 @@ public class Match {
                 this.grid.getWidth());
 
         System.out.println(this.grid.toStr());
-        int col = input.askRangedInt(prompt, 1, this.grid.getWidth()) - 1;
+        int col = this.input.askRangedInt(prompt, 1, this.grid.getWidth()) - 1;
 
         while (this.getFirstAvailableRow(col) == -1) {
             Ansi.clearLine();
-            col = input.askRangedInt("riga piena. cambia riga: ", 1, this.grid.getWidth()) - 1;
+            col = this.input.askRangedInt("riga piena. cambia riga: ", 1, this.grid.getWidth()) - 1;
         }
 
         return col;
@@ -248,7 +255,7 @@ public class Match {
      * 
      * @param input input handler
      */
-    void start(GestioneInput input) {
+    void start() {
         this.grid.resetGrid();
 
         this.currentPlayer = this.pickRandomPlayer();
@@ -258,7 +265,7 @@ public class Match {
         while (!this.hasEnded()) {
             Ansi.clearScreen();
 
-            col = input.isRawModeSupported() ? this.pickColRawMode(input) : this.pickColNormalMode(input);
+            col = input.isRawModeSupported() ? this.pickColRawMode(col) : this.pickColNormalMode();
             row = this.getFirstAvailableRow(col);
 
             this.grid.setCell(col, row, this.currentPlayer);
