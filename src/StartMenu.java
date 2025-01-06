@@ -1,5 +1,15 @@
+/**
+ * 
+ * @author Ivan Paljevic
+ * @version 2025.01.06
+ */
 public class StartMenu {
 
+  /**
+   * Prints the start menu and waits for input.
+   * 
+   * @param input input handler
+   */
   void show(GestioneInput input) {
     Ansi.clearScreen();
 
