@@ -12,4 +12,3 @@ The group consists of:
 ## Specs
 
 See [specs](./ForzaQuattro_I1C_SA2024.pdf)
-
