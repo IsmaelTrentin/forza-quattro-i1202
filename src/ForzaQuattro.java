@@ -13,7 +13,7 @@ public class ForzaQuattro {
         Partita gm = new Partita(input);
 
         menu.show(input); // blocking
-        gm.start(); // block
+        gm.start(); // blocking
 
         input.rilascia();
     }
